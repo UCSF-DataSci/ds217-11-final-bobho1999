@@ -1,0 +1,14 @@
+DATA CLEANING REPORT
+====================
+
+Rows before cleaning: 196271
+
+Missing Data Handling:
+
+Outlier Handling:
+
+Duplicates Removed: 0
+
+Data Type Conversions:
+- Measurement Timestamp: Converted to datetime64[ns]
+Rows after cleaning: 103559

@@ -1,0 +1,20 @@
+KEY FINDINGS SUMMARY
+===================
+
+MODEL PERFORMANCE:
+- Best performing model: XGBoost (R² = 0.9758)
+- All models show reasonable performance (R² > 0.7 for tree-based models)
+- XGBoost achieves lowest RMSE: 1.55°C
+
+FEATURE IMPORTANCE:
+- Most important feature: Wet Bulb Temperature (importance: 0.9614)
+- Top 3 features account for 97.84% of total importance
+- Temporal features (hour, month) are highly important
+
+TEMPORAL PATTERNS:
+- 
+
+DATA QUALITY:
+- Dataset cleaned: 196,271 → 103,559 rows
+- Missing values handled via backward-fill and dropping
+- Outliers capped using domain knowledge and IQR method

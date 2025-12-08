@@ -1,0 +1,10 @@
+feature,importance
+Wet Bulb Temperature,0.9614444
+wind_v,0.0084941285
+Solar Radiation,0.008434849
+hour,0.0077257333
+wind_u,0.004300223
+month,0.0031748784
+Total Rain,0.002878404
+Barometric Pressure,0.0026972562
+day_of_week,0.0008501608

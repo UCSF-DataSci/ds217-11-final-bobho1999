@@ -1,0 +1,14 @@
+wind_v
+wet_temp_rolling_24h
+pressure_rolling_7h
+rain_intensity_rolling_24h
+pressure_rolling_24h
+humidity_rolling_7h
+wind_category
+humidity_rolling_24h
+pressure_diff_1h
+rain_intensity_rolling_7h
+wind_dir_delta
+wind_u
+wet_temp_rolling_7h
+pressure_trend

@@ -28,21 +28,34 @@ Initial visualizations showed:
 
 ### Phase 3: Data Cleaning
 
-Data cleaning addressed missing values, outliers, and data type validation. Missing values in numeric columns were handled using forward-fill (appropriate for time series data) followed by median imputation for any remaining gaps. This approach preserved temporal continuity while ensuring complete datasets for modeling.
+Data cleaning addressed missing values, outliers, and data type validation. After examining the dataset, it seems like all missing rainfall-related measurements, such as Rain Intensity, Total Rain, and Precipitation Type, occur exclusively at the Foster Weather Station, while the other two stations (Oak Street and 63rd Street) contain nearly complete records. Because these beach weather stations are located along the same Chicago lakefront and experience highly correlated weather patterns, I imputed Foster’s missing rainfall-related values, as well as Wet Bulb Temperature, using the hourly mean value (or mode for Precipitation type and Heading) from the other two stations. This approach provides a physically reasonable estimate of rainfall conditions at Foster during each timestamp while avoiding unrealistic assumptions produced by simple constant filling. For hours when neither of the other stations recorded a usable value, I applied a forward fill as a fallback, which preserves temporal continuity without injecting future rainfall events into earlier time periods. This two-step strategy balances meteorological realism with data completeness and ensures that modeling is not biased by systematic under-reporting or artificial rain events at the Foster station.
 
 **Cleaning Results:**
 - Rows before cleaning: **196,271**
+- Missing values: Mean/mode-imputed and forward-filled
+  - Wet Bulb Temperature: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - Rain Intensity: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - Total Rain: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - Precipitation Type: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - Heading: 75,926 missing → 0 missing (large gap, likely sensor-specific)
 - Missing values: Forward-filled and median-imputed
   - Air Temperature: 75 missing → 0 missing
-  - Wet Bulb Temperature: 75,626 missing → 0 missing (large gap, likely sensor-specific)
   - Barometric Pressure: 146 missing → 0 missing
 - Outliers: Capped using IQR method (3×IQR bounds)
-  - Wind Speed: 2,574 outliers capped (bounds: [-3.50, 8.40])
+  - Air Temperature: 97 outliers capped (bounds: [-21.5, 47.3])
+  - Wet Bulb Temperature: 144 outliers capped (bounds: [-20.6, 41.5])
+  - Humidity: 185 outliers capped (bounds: [22.5, 114.5])
+  - Battery Life: 6 outliers capped (bounds: [7.1, 19.9])
+- Outliers: Capped using domain knowledge
+  - Wind Speed: 5 outliers capped (bounds: [0, 103.3])
+  - Max Wind: 6 outliers capped (bounds: [0, 103.3])
+  - Barometric Pressure: 7 outliers capped (bounds: [870, 1083.8])
+  - Solar Radiation: 13,425 outliers capped (bounds: [0, Inf])
 - Duplicates: Removed (0 duplicates found)
 - Data types: Validated and converted as needed
-- Rows after cleaning: **195,672** (no rows removed, only values cleaned)
+- Rows after cleaning: **182,516** (13,755 rows removed due to outliers)
 
-The cleaning process maintained the full dataset size while improving data quality. The large number of missing values in Wet Bulb Temperature (38.6%) suggests that this sensor may not be available at all stations or during certain periods, but forward-fill and median imputation ensured we could still use this feature in analysis.
+The cleaning process maintained more than 90% of the full dataset size while improving data quality. The large number of missing values in Wet Bulb Temperature and rainfall-related variables (38.68%) suggests that some sensors may not be available at Foster stations, but mean/mode imputation and forward-fill ensured we could still use those features in analysis.
 
 ### Phase 4: Data Wrangling
 
@@ -151,18 +164,18 @@ Top features by importance:
 The month feature dominates feature importance, accounting for 78.9% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month, year) and weather variables (rain, pressure, humidity) are more important than rolling windows of predictor variables. The top 5 features account for 92.1% of total importance.
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
-*Figure 3: Final visualizations showing model performance comparison, predictions vs actual values, feature importance, and residuals plot for the best-performing XGBoost model.*
+*Figure 3: Final visualizations showing model performance comparison, and predictions vs actual values, feature importance for the best-performing XGBoost model.*
 
 ### Phase 9: Results
 
-The final results demonstrate successful prediction of air temperature with good accuracy. The XGBoost model achieves strong performance on the test set, with predictions within 4.87°C on average.
+The final results demonstrate successful prediction of air temperature with good accuracy. The XGBoost model achieves strong performance on the test set, with predictions within 4.37°C on average.
 
 **Summary of Key Findings:**
-1. **Model Performance:** XGBoost achieves R² = 0.7684, indicating that 76.84% of variance in air temperature can be explained by the features
-2. **Feature Importance:** The month feature is overwhelmingly the most important predictor (78.9% importance), highlighting the critical role of seasonal patterns
+1. **Model Performance:** XGBoost achieves R² = 0.8102, indicating that 81.02% of variance in air temperature can be explained by the features
+2. **Feature Importance:** The month feature is overwhelmingly the most important predictor (62.25% importance), highlighting the critical role of seasonal patterns
 3. **Temporal Patterns:** Strong seasonal and daily patterns are critical for accurate prediction
-4. **Data Quality:** Cleaning process maintained full dataset while improving reliability
-5. **Data Leakage Avoidance:** By excluding features derived from the target variable, we achieved realistic and generalizable model performance
+4. **Data Quality:** Cleaning process maintained more than 90% of the dataset while improving reliability
+5. **Data Leakage Avoidance:** By excluding features derived from the target variable and features highly correlated (> 0.95) with target variable, we achieved realistic and generalizable model performance
 
 The residuals plot shows relatively uniform distribution around zero, suggesting the model performs reasonably well across the full temperature range. The predictions vs actual scatter plot shows points distributed around the perfect prediction line with some scatter, indicating good but not perfect accuracy - which is realistic for weather prediction.
 

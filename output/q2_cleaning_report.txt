@@ -33,7 +33,7 @@ Missing Data Handling:
   Result: All missing values filled
 
 Outlier Handling:
-- Air Temperature: Detected 500 outliers using IQR method (1.5×IQR)
+- Air Temperature: Detected 97 outliers using IQR method (1.5×IQR)
   Method: Capped at bounds [Q1 - 1.5×IQR, Q3 + 1.5×IQR]
   Bounds: [-21.5, 47.3]
   Result: 97 values capped

@@ -156,14 +156,14 @@ Two models were trained and evaluated: Linear Regression and XGBoost as suggeste
 - XGBoost significantly outperforms Linear Regression, with RMSE of 4.37°C compared to 8.64°C
 
 **Feature Importance (XGBoost):**
-Top features by importance:
+Top 5 features by importance:
 1. `month` (62.25% importance) - the most important, capturing seasonal patterns
 2. `Barometric Pressure` (6.95% importance)
 3. `Total Rain` (5.88% importance)
 4. `wind_u` (4.19% importance)
 5. `Humidity` (3.72% importance)
 
-The month feature dominates feature importance, accounting for 62.25% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month, year) and weather variables (rain, pressure, humidity, wind) are more important than rolling windows of predictor variables. The top 5 features account for 82.99% of total importance.
+The month feature dominates feature importance, accounting for 62.25% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month) and weather variables (rain, pressure, humidity, wind) are more important than rolling windows of predictor variables. The top 5 features account for 82.99% of total importance.
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
 *Figure 3: Final visualizations showing model performance comparison, and predictions vs actual values, feature importance for the best-performing XGBoost model.*
@@ -184,13 +184,13 @@ The residuals plot shows relatively uniform distribution around zero, suggesting
 ## Visualizations
 
 ![Figure 1: Initial Data Exploration](output/q1_visualizations.png)
-*Figure 1: Initial exploration showing distributions and time series of key variables.*
+*Figure 1: Initial exploration showing distributions and time series of target variable 'Air Temperature'.*
 
 ![Figure 2: Pattern Analysis](output/q5_patterns.png)
 *Figure 2: Advanced pattern analysis revealing temporal trends, seasonal patterns, daily cycles, and correlations.*
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
-*Figure 3: Final results showing model comparison, prediction accuracy, feature importance, and residual analysis.*
+*Figure 3: Final results showing model comparison, prediction accuracy, feature importance.*
 
 ## Model Results
 

@@ -1,4 +1,4 @@
 Metric,Linear Regression,XGBoost
-R² Score,0.9587,0.9649
-RMSE,2.04,1.88
-MAE,1.45,1.32
+R² Score,0.2575,0.8102
+RMSE,8.64,4.37
+MAE,7.12,3.36

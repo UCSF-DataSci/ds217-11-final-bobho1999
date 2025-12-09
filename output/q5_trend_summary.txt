@@ -1,0 +1,22 @@
+KEY PATTERNS IDENTIFIED
+======================
+
+TEMPORAL TRENDS:
+- Air temperatures show clear seasonal patterns
+- Higher temperatures in summer months (June-August)
+- Lower temperatures in winter months (December-February)
+- Monthly air temp range: Air Temperature   -5.040082
+air_temp_3m_ma    -1.724595
+dtype: float64°C to Air Temperature    25.347247
+air_temp_3m_ma     23.626176
+dtype: float64°C
+
+DAILY PATTERNS:
+- Temperature shows diurnal cycle (warmer during day, cooler at night)
+- Peak air temp typically at hour 15-16 (3-4 PM)
+- Minimum air temp typically at hour 4-5 (4-5 AM)
+
+CORRELATIONS:
+- Air Temp vs Water Temp: 0.98 (strong positive correlation)
+- Air Temp vs Total Rain: 0.45 (moderate positive correlation)
+- Air vs Solar Radiation: 0.29 (moderate positive correlation)

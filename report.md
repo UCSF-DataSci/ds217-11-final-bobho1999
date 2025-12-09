@@ -122,50 +122,45 @@ Pattern analysis revealed several important temporal and correlational patterns:
 Modeling preparation involved selecting a target variable, performing temporal train/test splitting, and preparing features. Air temperature was chosen as the target variable, as it's a key indicator of beach conditions and shows predictable patterns.
 
 **Temporal Train/Test Split:**
-- Split method: Temporal (80/20 split by time, NOT random)
-- Training set: **156,537 samples** (earlier data: April 2015 to ~March 2022)
-- Test set: **39,135 samples** (later data: ~March 2022 to November 2025)
+- Split method: Temporal (80/20 split by time)
+- Training set: **146,012 samples** (earlier data: April 2015 to ~May 2023)
+- Test set: **36,504 samples** (later data: ~May 2023 to December 2025)
 - Rationale: Time series data requires temporal splitting to avoid data leakage and ensure realistic evaluation
 
 **Feature Preparation:**
 - Features selected (excluding target, non-numeric columns, and features derived from target)
-- **Critical:** Excluded features derived from target variable:
-  - `temp_difference` (uses Air Temperature)
-  - `temp_ratio` (uses Air Temperature)
-  - `temp_category` (derived from Air Temperature)
-  - `comfort_index` (uses Air Temperature)
 - Excluded features with >0.95 correlation to target (e.g., Wet Bulb Temperature with 0.978 correlation)
-- Categorical variables (Station Name, wind_category) one-hot encoded
+- Categorical variables (Station Name) one-hot encoded
 - All features standardized and missing values handled
 - Infinite values replaced with NaN then filled with median
 - No data leakage: future data excluded from training set, and features derived from target excluded
-- Total dataset: **195,672 rows** before split
+- Total dataset: **182,516 rows** before split
 
 ### Phase 8: Modeling
 
-Two models were trained and evaluated: Linear Regression and XGBoost (as suggested in the assignment).
+Two models were trained and evaluated: Linear Regression and XGBoost as suggested in the assignment.
 
 **Model Performance:**
 
 | Model | R² Score | RMSE | MAE |
 |-------|----------|------|-----|
-| Linear Regression | 0.3046 | 8.43°C | 7.04°C |
-| XGBoost | 0.7684 | 4.87°C | 3.66°C |
+| Linear Regression | 0.2573 | 8.64°C | 7.12°C |
+| XGBoost | 0.8102 | 4.37°C | 3.36°C |
 
 **Key Findings:**
-- Linear Regression achieved moderate performance (R² = 0.3046), indicating that linear relationships alone are insufficient for accurate temperature prediction
-- XGBoost achieved strong performance (R² = 0.7684), demonstrating the importance of non-linear modeling and gradient boosting methods
-- XGBoost significantly outperforms Linear Regression, with RMSE of 4.87°C compared to 8.43°C
+- Linear Regression achieved moderate performance (R² = 0.2573), indicating that linear relationships alone are insufficient for accurate temperature prediction
+- XGBoost achieved strong performance (R² = 0.8102), demonstrating the importance of non-linear modeling and gradient boosting methods
+- XGBoost significantly outperforms Linear Regression, with RMSE of 4.37°C compared to 8.64°C
 
 **Feature Importance (XGBoost):**
 Top features by importance:
-1. `month` (78.9% importance) - by far the most important, capturing seasonal patterns
-2. `Total Rain` (5.6% importance)
-3. `Barometric Pressure` (3.9% importance)
-4. `Humidity` (2.1% importance)
-5. `year` (1.6% importance)
+1. `month` (62.25% importance) - the most important, capturing seasonal patterns
+2. `Barometric Pressure` (6.95% importance)
+3. `Total Rain` (5.88% importance)
+4. `wind_u` (4.19% importance)
+5. `Humidity` (3.72% importance)
 
-The month feature dominates feature importance, accounting for 78.9% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month, year) and weather variables (rain, pressure, humidity) are more important than rolling windows of predictor variables. The top 5 features account for 92.1% of total importance.
+The month feature dominates feature importance, accounting for 62.25% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month, year) and weather variables (rain, pressure, humidity, wind) are more important than rolling windows of predictor variables. The top 5 features account for 82.99% of total importance.
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
 *Figure 3: Final visualizations showing model performance comparison, and predictions vs actual values, feature importance for the best-performing XGBoost model.*
@@ -179,7 +174,7 @@ The final results demonstrate successful prediction of air temperature with good
 2. **Feature Importance:** The month feature is overwhelmingly the most important predictor (62.25% importance), highlighting the critical role of seasonal patterns
 3. **Temporal Patterns:** Strong seasonal and daily patterns are critical for accurate prediction
 4. **Data Quality:** Cleaning process maintained more than 90% of the dataset while improving reliability
-5. **Data Leakage Avoidance:** By excluding features derived from the target variable and features highly correlated (> 0.95) with target variable, we achieved realistic and generalizable model performance
+5. **Data Leakage Avoidance:** By not deriving features from the target variable and excluding features highly correlated (> 0.95) with target variable, we achieved realistic and generalizable model performance
 
 The residuals plot shows relatively uniform distribution around zero, suggesting the model performs reasonably well across the full temperature range. The predictions vs actual scatter plot shows points distributed around the perfect prediction line with some scatter, indicating good but not perfect accuracy - which is realistic for weather prediction.
 
@@ -211,9 +206,8 @@ The modeling phase successfully built predictive models for air temperature. The
 
 **Feature Importance Insights:**
 The feature importance analysis reveals that:
-- The month feature is overwhelmingly the most important predictor (62.25% importance)
-- This suggests that seasonal patterns are the strongest predictor of air temperature
-- Weather variables (Total Rain, Barometric Pressure, Humidity, Solar Radiation) are important but secondary to temporal patterns
+- The month feature is overwhelmingly the most important predictor (62.25% importance), suggesting  seasonal patterns are the strongest predictor of air temperature
+- Weather variables (Total Rain, Barometric Pressure, Humidity, Solar Radiation) and vectorized wind variables are important but secondary to temporal patterns
 - Rolling windows of predictor variables (humidity, pressure, rain intensity) contribute but are less important than seasonal features
 - Temporal features (month, year) are far more important than static weather variables
 - Station location has minimal impact (encoded station features have very low importance)

@@ -33,15 +33,49 @@ Missing Data Handling:
   Result: All missing values filled
 
 Outlier Handling:
-- Water Temperature: Detected 500 outliers using IQR method (3×IQR)
-  Method: Capped at bounds [Q1 - 3×IQR, Q3 + 3×IQR]
-  Bounds: [-5.2, 35.8]
-  Result: 500 values capped
+- Air Temperature: Detected 500 outliers using IQR method (1.5×IQR)
+  Method: Capped at bounds [Q1 - 1.5×IQR, Q3 + 1.5×IQR]
+  Bounds: [-21.5, 47.3]
+  Result: 97 values capped
+
+- Wet Bulb Temperature: Detected 144 outliers using IQR method (1.5×IQR)
+  Method: Capped at bounds [Q1 - 1.5×IQR, Q3 + 1.5×IQR]
+  Bounds: [-20.6, 41.5]
+  Result: 144 values capped
+
+- Humidity: Detected 185 outliers using IQR method (1.5×IQR)
+  Method: Capped at bounds [Q1 - 1.5×IQR, Q3 + 1.5×IQR]
+  Bounds: [22.5, 114.5]
+  Result: 185 values capped
+
+- Wind Speed: Detected 5 using domain knowledge
+  Method: Capped at 0 and 103.3 (Highest wind speed ever recorded)
+  Bounds: [0, 103.3]
+  Result: 5 values capped
+
+- Max Wind: Detected 6 using domain knowledge
+  Method: Capped at 0 and 103.3 (Highest wind speed ever recorded)
+  Bounds: [0, 103.3]
+  Result: 6 values capped
+
+- Barometric Pressure: Detected 7 using domain knowledge
+  Method: Capped at 870 and 1083.8 (Lowest and highest pressure ever recorded)
+  Bounds: [870, 1083.8]
+  Result: 7 values capped
+
+- Solar Radiation: Detected 13425 using domain knowledge (solar radiation ≥ 0)
+  Method: Capped at 0 and infinite
+  Bounds: [0, Inf]
+  Result: 13425 values capped
+
+- Battery Life: Detected 6 outliers using IQR method (1.5×IQR)
+  Method: Capped at bounds [Q1 - 1.5×IQR, Q3 + 1.5×IQR]
+  Bounds: [7.1, 19.9]
+  Result: 6 values capped
 
 Duplicates Removed: 0
 
 Data Type Conversions:
 - Measurement Timestamp: Converted to datetime64[ns]
 
-Rows after cleaning: 103559
-
+Rows after cleaning: 182516

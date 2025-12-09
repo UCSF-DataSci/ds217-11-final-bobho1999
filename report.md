@@ -101,18 +101,21 @@ Pattern analysis revealed several important temporal and correlational patterns:
 
 **Temporal Trends:**
 - Clear seasonal patterns: Air temperatures peak in summer months and reach minima in winter
-- Monthly air temperature range: -2.6°C to 23.6°C
+- Monthly air temperature range: -5.0°C to 25.3°C
 - Strong seasonal variation typical of Chicago's climate
 
 **Daily Patterns:**
 - Strong diurnal cycle in air temperature (warmer during day, cooler at night)
-- Peak air temperature typically occurs around hour 16 (4 PM)
-- Minimum air temperature typically occurs around hour 6 (6 AM)
+- Peak air temperature typically occurs around hour 15-16 (3-4 PM)
+- Minimum air temperature typically occurs around hour 4-5 (4-5 AM)
 - This pattern reflects solar heating and cooling cycles
 
 **Correlations:**
-- Air Temperature vs Wind Speed: -0.230 (moderate negative correlation - windier days tend to be cooler)
-- Air Temperature vs Humidity: 0.009 (very weak positive correlation)
+- Air Temperature vs Wet Bulb Temperature: 0.98 (strong positive correlation as the two measurements are associated)
+- Air Temperature vs Total Rain: 0.45 (moderate positive correlation - rainy days tend to be hotter)
+- Air Temperature vs Barometric Pressure: -0.25 (moderate negative correlation - higher pressure tend to be cooler)
+- Air Temperature vs Wind Speed: -0.18 (moderate negative correlation - windier days tend to be cooler)
+- Air Temperature vs Humidity: 0.01 (very weak positive correlation)
 
 ![Figure 2: Pattern Analysis](output/q5_patterns.png)
 *Figure 2: Advanced pattern analysis showing monthly temperature trends, seasonal patterns by month, daily patterns by hour, and correlation heatmap of key variables.*
@@ -219,26 +222,27 @@ The feature importance analysis reveals that:
 The analysis revealed several important temporal patterns:
 
 **Long-term Trends:**
-- Stable long-term trends over the 10.6-year period
-- No significant increasing or decreasing trends (data appears stationary after accounting for seasonality)
-- Consistent seasonal cycles year over year
+- Stable  long-term trend throughout the 2015–2025 period, showing no major upward or downward trends in average temperature despite some year to year variation
+- Strong annual temperature cycle with air temperatures rising each summer and falling each winter in a consistent pattern across all years
+- A small flattening appears around 2020–2021 likely due to missing sensor data rather than a real climatic effect
 
 **Seasonal Patterns:**
 - **Monthly:** Clear seasonal cycle with temperatures peaking in summer months (June-August) and reaching minima in winter months (December-February)
-- Monthly air temperature range: -2.6°C to 23.6°C
-- **Daily:** Strong diurnal cycle with temperatures peaking in afternoon (4 PM, hour 16) and reaching minima in early morning (6 AM, hour 6)
-- Daily patterns are consistent across seasons, though amplitude varies
+- Monthly air temperature range: -5.0°C to 25.3°C
+- **Daily:** Strong diurnal cycle with temperatures peaking in afternoon (3-4 PM, hour 15-16) and reaching minima in early morning (4-5 AM, hour 4-5)
+- Daily patterns are consistent across different day of the wekk, though amplitude varies
 
 **Temporal Relationships:**
-- Air temperature shows strong seasonal patterns (month is the most important predictor)
-- Wind speed shows moderate negative correlation with temperature (-0.230)
-- Humidity shows very weak correlation with temperature (0.009)
-- Rolling windows of predictor variables (wind speed, humidity, pressure) capture temporal dependencies
+- Air temperature shows strong seasonal patterns with month being the most important predictor
+- Total rain shows moderate positive correlation with air temperature (0.47)
+- Solar radiation shows moderate positive correlation with temperature (0.29)
+- Barometric pressure shows moderate negative correlation with temperature (-0.25)
+- Rolling windows of predictor variables (rain intensity, humidity, pressure) capture temporal dependencies
 
 **Anomalies:**
-- Large gap in Wet Bulb Temperature data (75,626 missing values, 38.6% of dataset)
-- This likely represents periods when certain sensors were not operational
-- Some sensor dropouts identified (gaps in time series)
+- Large gap in Wet Bulb Temperature and rainfall-related data (75,926 missing values, 38.68% of dataset) appears exclusively in Foster station data
+- The length of gap matches the length of data from Foster station, which likely indicates certain sensors were not operational at the station throughout the measurement period
+- Missing sensor value in 2020 and 2021 identified (gaps in time series)
 - No major anomalies in temporal patterns beyond expected seasonal variation
 
 These temporal patterns are critical for accurate prediction, as evidenced by the high importance of temporal features (especially rolling windows) in the model.
@@ -248,22 +252,22 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
 **Limitations:**
 
 1. **Data Quality:**
-   - Large number of missing values in Wet Bulb Temperature (38.6%) required imputation, which may introduce bias
+   - Large number of missing values in Wet Bulb Temperature, rainfall-related features (38.68%) required imputation, which may introduce bias
    - Sensor dropouts create gaps in time series that could affect pattern detection
    - Outlier capping may have removed some valid extreme events
    - Only 3 weather stations - limited spatial coverage
 
 2. **Model Limitations:**
-   - Linear Regression's moderate performance (R² = 0.3046) indicates that linear relationships are insufficient for this task
-   - XGBoost shows some overfitting (train R² = 0.9091 vs test R² = 0.7684), though this is reasonable
-   - Model relies heavily on seasonal features (month = 78.9% importance), which limits predictive power for same-season predictions
+   - Linear Regression's moderate performance (R² = 0.2575) indicates that linear relationships are insufficient for this task
+   - XGBoost shows some overfitting (train R² = 0.9145 vs test R² = 0.8102), though this is reasonable
+   - Model relies heavily on seasonal features (month = 62.25% importance), which limits predictive power for same-season predictions
    - Model trained on historical data may not generalize to future climate conditions
-   - RMSE of 4.87°C, while reasonable, may not be sufficient for applications requiring high precision
+   - RMSE of 4.37°C, while reasonable, may not be sufficient for applications requiring high precision
 
 3. **Feature Engineering:**
    - Some potentially useful features may not have been created (e.g., lag features, interaction terms)
    - Rolling window sizes (7h, 24h) were chosen somewhat arbitrarily
-   - Features derived from target variable were correctly excluded to avoid data leakage
+   - Avoided deriving features from target variable Air Temperature to avoid data leakage
    - External data (e.g., weather forecasts, lake conditions) not incorporated
 
 4. **Scope:**

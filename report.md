@@ -10,16 +10,16 @@ This analysis examines weather sensor data from Chicago beaches along Lake Michi
 Initial exploration revealed a dataset of **196,271 records** with 18 columns including temperature measurements (air and wet bulb), wind speed and direction, humidity, precipitation, barometric pressure, solar radiation, and sensor metadata. The data spans from April 25, 2015 to December 2, 2025, with measurements from three different weather stations: 63rd Street Weather Station, Foster Weather Station, and Oak Street Weather Station.
 
 **Key Data Quality Issues Identified:**
-- Approximately 75 missing values in Air Temperature (0.04%)
-- Approximately 75,926 missing values in Wet Bulb Temperature (38.68%) - significant portion of data
-- Missing values in Rain Intensity, Total Rain, Precipitation Type, and Heading (same 75,926 records) all from Foster Weather Station
+- 75 missing values in Air Temperature (0.04%)
+- 75,926 missing values in Wet Bulb Temperature (38.68%) - significant portion of data
+- Missing values in Wet Bulb Temperature, Rain Intensity, Total Rain, Precipitation Type, and Heading (same 75,926 records) all from Foster Weather Station
 - 146 missing values in Barometric Pressure
 - 13,425 negative values in Solar Radiation
 - Some outliers in Air Temperature, Wet Bulb Temperature, Humidity, Wind Speed, Barometric Pressure, and Battery Life measurements
 - Data collected at hourly intervals with some gaps
 
 Initial visualizations showed:
-- Air temperature ranging from approximately °C to °C
+- Air temperature ranging from approximately -20°C to 35°C
 - Clear seasonal patterns visible in temperature data
 - 
 

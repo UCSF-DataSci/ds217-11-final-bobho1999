@@ -199,26 +199,26 @@ The residuals plot shows relatively uniform distribution around zero, suggesting
 The modeling phase successfully built predictive models for air temperature. The performance metrics demonstrate that XGBoost performs well, while Linear Regression shows that linear relationships alone are insufficient for this task.
 
 **Performance Interpretation:**
-- **R² Score:** Measures proportion of variance explained. XGBoost's R² of 0.7684 means the model explains 76.84% of variance in air temperature - a strong but realistic result.
-- **RMSE (Root Mean Squared Error):** Average prediction error in original units. XGBoost's RMSE of 4.87°C means predictions are typically within 4.87°C of actual values - reasonable for weather prediction.
-- **MAE (Mean Absolute Error):** Average absolute prediction error. XGBoost's MAE of 3.66°C indicates good predictive accuracy.
+- **R² Score:** Measures proportion of variance explained. XGBoost's R² of 0.8102 means the model explains 81.02% of variance in air temperature - a strong but realistic result.
+- **RMSE (Root Mean Squared Error):** Average prediction error in original units. XGBoost's RMSE of 4.37°C means predictions are typically within 4.37°C of actual values - reasonable for weather prediction.
+- **MAE (Mean Absolute Error):** Average absolute prediction error. XGBoost's MAE of 3.36°C indicates good predictive accuracy.
 
 **Model Selection:** XGBoost is selected as the best model due to:
-1. Highest R² score (0.7684)
-2. Lowest RMSE (4.87°C)
-3. Lowest MAE (3.66°C)
-4. Good generalization (train R² = 0.9091, test R² = 0.7684 - some overfitting but reasonable)
+1. Highest R² score (0.8102)
+2. Lowest RMSE (4.37°C)
+3. Lowest MAE (3.36°C)
+4. Good generalization (train R² = 0.9145, test R² = 0.8102 - some overfitting but reasonable)
 
 **Feature Importance Insights:**
 The feature importance analysis reveals that:
-- The month feature is overwhelmingly the most important predictor (78.9% importance)
+- The month feature is overwhelmingly the most important predictor (62.25% importance)
 - This suggests that seasonal patterns are the strongest predictor of air temperature
-- Weather variables (Total Rain, Barometric Pressure, Humidity) are important but secondary to temporal patterns
-- Rolling windows of predictor variables (humidity, pressure, wind speed) contribute but are less important than seasonal features
+- Weather variables (Total Rain, Barometric Pressure, Humidity, Solar Radiation) are important but secondary to temporal patterns
+- Rolling windows of predictor variables (humidity, pressure, rain intensity) contribute but are less important than seasonal features
 - Temporal features (month, year) are far more important than static weather variables
 - Station location has minimal impact (encoded station features have very low importance)
 
-**Note on Data Leakage Avoidance:** By excluding features derived from the target variable (temp_difference, temp_ratio, temp_category, comfort_index) and highly correlated features (Wet Bulb Temperature), we achieved realistic model performance. This demonstrates the importance of careful feature selection to avoid circular logic.
+**Note on Data Leakage Avoidance:** By not deriving  features from the target variable and excluding highly correlated features (Wet Bulb Temperature), we achieved realistic model performance. This demonstrates the importance of careful feature selection to avoid circular logic.
 
 ## Time Series Patterns
 

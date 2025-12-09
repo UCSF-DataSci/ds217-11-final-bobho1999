@@ -69,27 +69,31 @@ Datetime parsing and temporal feature extraction were critical for time series a
 - `day_name`: Day name (Monday-Sunday)
 - `is_weekend`: Binary indicator (1 if Saturday/Sunday)
 
-The dataset covers approximately 10.6 years of hourly measurements (April 2015 to November 2025), providing substantial data for robust temporal analysis. After removing rows with invalid datetime values, **195,672 records** remained with valid temporal features.
+The dataset covers approximately 10.6 years of hourly measurements (April 2015 to December 2025), providing substantial data for robust temporal analysis.
 
 ### Phase 5: Feature Engineering
 
-Feature engineering created derived variables and rolling window statistics to capture relationships and temporal dependencies.
+Feature engineering created derived variables and rolling window statistics to capture relationships and temporal dependencies. To avoid data leakage, no features were derived from the target variable `Air Temperature`. Similarly, only rolling windows of predictor variables were created. Creating rolling windows of the target variable (e.g., `air_temp_rolling_7h` when predicting Air Temperature) would cause data leakage. The rolling window features of predictor variables capture temporal dependencies essential for time series prediction.
 
 **Derived Features:**
-- `wind_speed_squared`: Non-linear wind effect
-- Note: Features derived from the target variable (e.g., `temp_difference`, `temp_ratio`, `temp_category`, `comfort_index`) were created during feature engineering but excluded from modeling to avoid data leakage.
+- `pressure_diff_1h`: Pressure change
+- `wind_dir_delta`: Wind direction change using circular difference
+- `wind_u`: Vectorized wind components (wind speed × cos(wind direction))
+- `wind_v`: Vectorized wind components (wind speed × sin(wind direction))
 
 **Rolling Window Features:**
-- `wind_speed_rolling_7h`: 7-hour rolling mean of wind speed
-- `wind_speed_rolling_24h`: 24-hour rolling mean of wind speed
+- `wet_temp_rolling_7h`: 7-hour rolling mean of wet bulb temperature
+- `wet_temp_rolling_24h`: 24-hour rolling mean of wet bulb temperature
+- `rain_intensity_rolling_7h`: 7-hour rolling mean of rain intensity
+- `rain_intensity_rolling_24h`: 24-hour rolling mean of rain intensity
 - `humidity_rolling_7h`: 7-hour rolling mean of humidity
+- `humidity_rolling_24h`: 24-hour rolling mean of humidity
 - `pressure_rolling_7h`: 7-hour rolling mean of barometric pressure
+- `pressure_rolling_24h`: 24-hour rolling mean of barometric pressure
 
 **Categorical Features:**
-- `wind_category`: Wind speed bins (Calm, Light, Moderate, Strong)
-- Note: `temp_category` was excluded from modeling as it's derived from the target variable.
-
-**Important:** Only rolling windows of predictor variables were created, not the target variable. Creating rolling windows of the target variable (e.g., `air_temp_rolling_7h` when predicting Air Temperature) would cause data leakage. The rolling window features of predictor variables capture temporal dependencies essential for time series prediction.
+- `wind_category`: Wind direction bins (North, East, South, West)
+- `pressure_trend`: Pressure trend bins (rising, steady, falling)
 
 ### Phase 6: Pattern Analysis
 

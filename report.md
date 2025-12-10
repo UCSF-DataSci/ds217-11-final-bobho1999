@@ -16,7 +16,7 @@ Initial exploration revealed a dataset of **196,271 records** with 18 columns in
 - 146 missing values in Barometric Pressure
 - 13,425 negative values in Solar Radiation
 - Some outliers in Air Temperature, Wet Bulb Temperature, Humidity, Wind Speed, Barometric Pressure, and Battery Life measurements
-- Data collected at hourly intervals with some gaps
+- Data collected at hourly intervals with some gaps around 2020-2021
 
 Initial visualizations showed:
 - Air temperature ranging from approximately -20°C to 35°C
@@ -28,34 +28,34 @@ Initial visualizations showed:
 
 ### Phase 3: Data Cleaning
 
-Data cleaning addressed missing values, outliers, and data type validation. After examining the dataset, it seems like all missing rainfall-related measurements, such as Rain Intensity, Total Rain, and Precipitation Type, occur exclusively at the Foster Weather Station, while the other two stations (Oak Street and 63rd Street) contain nearly complete records. Because these beach weather stations are located along the same Chicago lakefront and experience highly correlated weather patterns, I imputed Foster’s missing rainfall-related values, as well as Wet Bulb Temperature, using the hourly mean value (or mode for Precipitation type and Heading) from the other two stations. This approach provides a physically reasonable estimate of rainfall conditions at Foster during each timestamp while avoiding unrealistic assumptions produced by simple constant filling. For hours when neither of the other stations recorded a usable value, I applied a forward fill as a fallback, which preserves temporal continuity without injecting future rainfall events into earlier time periods. This two-step strategy balances meteorological realism with data completeness and ensures that modeling is not biased by systematic under-reporting or artificial rain events at the Foster station.
+Data cleaning addressed missing values, outliers, and data type validation. After examining the dataset, it seems like all missing precipitation-related measurements, such as `Rain Intensity`, `Total Rain`, and `Precipitation Type`, occur exclusively at the Foster Weather Station, while the other two stations (Oak Street and 63rd Street) contain nearly complete records. Because these beach weather stations are located along the same Chicago lakefront and experience highly correlated weather patterns, I imputed Foster’s missing precipitation-related values, as well as Wet Bulb Temperature, using the hourly mean value (or mode for Precipitation type and Heading) from the other two stations. This approach provides a physically reasonable estimate of precipitation conditions at Foster during each timestamp while avoiding unrealistic assumptions produced by simple constant filling. For hours when neither of the other stations recorded a usable value, I applied a forward fill as a fallback, which preserves temporal continuity without injecting future precipitation events into earlier time periods. This two-step strategy balances meteorological realism with data completeness and ensures that modeling is not biased by systematic under-reporting or artificial rain events at the Foster station. For the remaining small amount of missing values in `Air Temperature` and `Barometric Pressure`, simple forward-filling is applied.
 
 **Cleaning Results:**
 - Rows before cleaning: **196,271**
 - Missing values: Mean/mode-imputed and forward-filled
-  - Wet Bulb Temperature: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - Rain Intensity: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - Total Rain: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - Precipitation Type: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - Heading: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-- Missing values: Forward-filled and median-imputed
-  - Air Temperature: 75 missing → 0 missing
-  - Barometric Pressure: 146 missing → 0 missing
+  - `Wet Bulb Temperature`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - `Rain Intensity`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - `Total Rain`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - `Precipitation Type`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - `Heading`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+- Missing values: Forward-filled
+  - `Air Temperature`: 75 missing → 0 missing
+  - `Barometric Pressure`: 146 missing → 0 missing
 - Outliers: Capped using IQR method (3×IQR bounds)
-  - Air Temperature: 97 outliers capped (bounds: [-21.5, 47.3])
-  - Wet Bulb Temperature: 144 outliers capped (bounds: [-20.6, 41.5])
-  - Humidity: 185 outliers capped (bounds: [22.5, 114.5])
-  - Battery Life: 6 outliers capped (bounds: [7.1, 19.9])
+  - `Air Temperature`: 97 outliers capped (bounds: [-21.5, 47.3])
+  - `Wet Bulb Temperature`: 144 outliers capped (bounds: [-20.6, 41.5])
+  - `Humidity`: 185 outliers capped (bounds: [22.5, 114.5])
+  - `Battery Life`: 6 outliers capped (bounds: [7.1, 19.9])
 - Outliers: Capped using domain knowledge
-  - Wind Speed: 5 outliers capped (bounds: [0, 103.3])
-  - Max Wind: 6 outliers capped (bounds: [0, 103.3])
-  - Barometric Pressure: 7 outliers capped (bounds: [870, 1083.8])
-  - Solar Radiation: 13,425 outliers capped (bounds: [0, Inf])
+  - `Wind Speed`: 5 outliers capped (bounds: [0, 103.3])
+  - `Max Wind`: 6 outliers capped (bounds: [0, 103.3])
+  - `Barometric Pressure`: 7 outliers capped (bounds: [870, 1083.8])
+  - `Solar Radiation`: 13,425 outliers capped (bounds: [0, Inf])
 - Duplicates: Removed (0 duplicates found)
 - Data types: Validated and converted as needed
 - Rows after cleaning: **182,516** (13,755 rows removed due to outliers)
 
-The cleaning process maintained more than 90% of the full dataset size while improving data quality. The large number of missing values in Wet Bulb Temperature and rainfall-related variables (38.68%) suggests that some sensors may not be available at Foster stations, but mean/mode imputation and forward-fill ensured we could still use those features in analysis.
+The cleaning process maintained more than 90% of the full dataset size while improving data quality. The large number of missing values in `Wet Bulb Temperature` and precipitation-related variables (38.68%) suggests that some sensors may not be available at Foster stations, but mean/mode imputation and forward-fill ensured we could still use those features in analysis.
 
 ### Phase 4: Data Wrangling
 
@@ -76,7 +76,7 @@ The dataset covers approximately 10.6 years of hourly measurements (April 2015 t
 Feature engineering created derived variables and rolling window statistics to capture relationships and temporal dependencies. To avoid data leakage, no features were derived from the target variable `Air Temperature`. Similarly, only rolling windows of predictor variables were created. Creating rolling windows of the target variable (e.g., `air_temp_rolling_7h` when predicting Air Temperature) would cause data leakage. The rolling window features of predictor variables capture temporal dependencies essential for time series prediction.
 
 **Derived Features:**
-- `pressure_diff_1h`: Pressure change
+- `pressure_delta`: Pressure change between one hour
 - `wind_dir_delta`: Wind direction change using circular difference
 - `wind_u`: Vectorized wind components (wind speed × cos(wind direction))
 - `wind_v`: Vectorized wind components (wind speed × sin(wind direction))
@@ -240,7 +240,7 @@ The analysis revealed several important temporal patterns:
 - Rolling windows of predictor variables (rain intensity, humidity, pressure) capture temporal dependencies
 
 **Anomalies:**
-- Large gap in Wet Bulb Temperature and rainfall-related data (75,926 missing values, 38.68% of dataset) appears exclusively in Foster station data
+- Large gap in Wet Bulb Temperature and precipitation-related data (75,926 missing values, 38.68% of dataset) appears exclusively in Foster station data
 - The length of gap matches the length of data from Foster station, which likely indicates certain sensors were not operational at the station throughout the measurement period
 - Missing sensor value in 2020 and 2021 identified (gaps in time series)
 - No major anomalies in temporal patterns beyond expected seasonal variation
@@ -252,7 +252,7 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
 **Limitations:**
 
 1. **Data Quality:**
-   - Large number of missing values in Wet Bulb Temperature, rainfall-related features (38.68%) required imputation, which may introduce bias
+   - Large number of missing values in Wet Bulb Temperature, precipitation-related features (38.68%) required imputation, which may introduce bias
    - Sensor dropouts create gaps in time series that could affect pattern detection
    - Outlier capping may have removed some valid extreme events
    - Only 3 weather stations - limited spatial coverage

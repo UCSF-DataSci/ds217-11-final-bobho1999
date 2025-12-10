@@ -1,7 +1,7 @@
 # Chicago Beach Weather Sensors Analysis
 ## Executive Summary
 
-This analysis examines weather sensor data from Chicago beaches along Lake Michigan, covering 196,271 hourly measurements from April 2015 to December 2025 across three weather stations. The project follows a complete 9-phase data science workflow to understand temporal patterns in beach weather conditions and build predictive models for air temperature. Key findings include strong seasonal temperature patterns, significant daily cycles, and successful prediction models. The XGBoost model emerged as the best performer, with a test R² of 0.8102 and RMSE of 4.37°C, demonstrating that air temperature can be predicted with good accuracy from temporal features, rolling windows of predictor variables, and weather variables.
+This analysis examines weather sensor data from Chicago beaches along Lake Michigan, covering 196,271 hourly measurements from April 2015 to December 2025 across three weather stations. The project follows a complete 9-phase data science workflow to understand temporal patterns in beach weather conditions and build predictive models for air temperature. Key findings include strong seasonal temperature patterns, significant daily cycles, and successful prediction models. The XGBoost model emerged as the best performer, with a test R² of 0.8130 and RMSE of 4.34°C, demonstrating that air temperature can be predicted with good accuracy from temporal features, rolling windows of predictor variables, and weather variables.
 
 ## Phase-by-Phase Findings
 
@@ -148,33 +148,33 @@ Two models were trained and evaluated: Linear Regression and XGBoost as suggeste
 | Model | R² Score | RMSE | MAE |
 |-------|----------|------|-----|
 | Linear Regression | 0.2573 | 8.64°C | 7.12°C |
-| XGBoost | 0.8102 | 4.37°C | 3.36°C |
+| XGBoost | 0.8130 | 4.34°C | 3.32°C |
 
 **Key Findings:**
 - Linear Regression achieved moderate performance (R² = 0.2573), indicating that linear relationships alone are insufficient for accurate temperature prediction
-- XGBoost achieved strong performance (R² = 0.8102), demonstrating the importance of non-linear modeling and gradient boosting methods
-- XGBoost significantly outperforms Linear Regression, with RMSE of 4.37°C compared to 8.64°C
+- XGBoost achieved strong performance (R² = 0.8130), demonstrating the importance of non-linear modeling and gradient boosting methods
+- XGBoost significantly outperforms Linear Regression, with RMSE of 4.34°C compared to 8.64°C
 
 **Feature Importance (XGBoost):**
 Top 5 features by importance:
-1. `month` (62.25% importance) - the most important, capturing seasonal patterns
-2. `Barometric Pressure` (6.95% importance)
-3. `Total Rain` (5.88% importance)
-4. `wind_u` (4.19% importance)
-5. `Humidity` (3.72% importance)
+1. `month` (62.58% importance) - the most important, capturing seasonal patterns
+2. `Barometric Pressure` (6.69% importance)
+3. `Total Rain` (6.19% importance)
+4. `wind_u` (4.10% importance)
+5. `Humidity` (3.78% importance)
 
-The month feature dominates feature importance, accounting for 62.25% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month) and weather variables (rain, pressure, humidity, wind) are more important than rolling windows of predictor variables. The top 5 features account for 82.99% of total importance.
+The month feature dominates feature importance, accounting for 62.58% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month) and weather variables (rain, pressure, humidity, wind) are more important than rolling windows of predictor variables. The top 5 features account for 83.34% of total importance.
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
 *Figure 3: Final visualizations showing model performance comparison, and predictions vs actual values, feature importance for the best-performing XGBoost model.*
 
 ### Phase 9: Results
 
-The final results demonstrate successful prediction of air temperature with good accuracy. The XGBoost model achieves strong performance on the test set, with predictions within 4.37°C on average.
+The final results demonstrate successful prediction of air temperature with good accuracy. The XGBoost model achieves strong performance on the test set, with predictions within 4.34°C on average.
 
 **Summary of Key Findings:**
-1. **Model Performance:** XGBoost achieves R² = 0.8102, indicating that 81.02% of variance in air temperature can be explained by the features
-2. **Feature Importance:** The month feature is overwhelmingly the most important predictor (62.25% importance), highlighting the critical role of seasonal patterns
+1. **Model Performance:** XGBoost achieves R² = 0.8130, indicating that 81.02% of variance in air temperature can be explained by the features
+2. **Feature Importance:** The month feature is overwhelmingly the most important predictor (62.58% importance), highlighting the critical role of seasonal patterns
 3. **Temporal Patterns:** Strong seasonal and daily patterns are critical for accurate prediction
 4. **Data Quality:** Cleaning process maintained more than 90% of the dataset while improving reliability
 5. **Data Leakage Avoidance:** By not deriving features from the target variable and excluding features highly correlated (> 0.95) with target variable, we achieved realistic and generalizable model performance
@@ -197,19 +197,19 @@ The residuals plot shows relatively uniform distribution around zero, suggesting
 The modeling phase successfully built predictive models for air temperature. The performance metrics demonstrate that XGBoost performs well, while Linear Regression shows that linear relationships alone are insufficient for this task.
 
 **Performance Interpretation:**
-- **R² Score:** Measures proportion of variance explained. XGBoost's R² of 0.8102 means the model explains 81.02% of variance in air temperature - a strong but realistic result.
-- **RMSE (Root Mean Squared Error):** Average prediction error in original units. XGBoost's RMSE of 4.37°C means predictions are typically within 4.37°C of actual values - reasonable for weather prediction.
-- **MAE (Mean Absolute Error):** Average absolute prediction error. XGBoost's MAE of 3.36°C indicates good predictive accuracy.
+- **R² Score:** Measures proportion of variance explained. XGBoost's R² of 0.8130 means the model explains 81.02% of variance in air temperature - a strong but realistic result.
+- **RMSE (Root Mean Squared Error):** Average prediction error in original units. XGBoost's RMSE of 4.34°C means predictions are typically within 4.34°C of actual values - reasonable for weather prediction.
+- **MAE (Mean Absolute Error):** Average absolute prediction error. XGBoost's MAE of 3.32°C indicates good predictive accuracy.
 
 **Model Selection:** XGBoost is selected as the best model due to:
-1. Highest R² score (0.8102)
-2. Lowest RMSE (4.37°C)
-3. Lowest MAE (3.36°C)
-4. Good generalization (train R² = 0.9145, test R² = 0.8102 - some overfitting but reasonable)
+1. Highest R² score (0.8130)
+2. Lowest RMSE (4.34°C)
+3. Lowest MAE (3.32°C)
+4. Good generalization (train R² = 0.9128, test R² = 0.8130 - some overfitting but reasonable)
 
 **Feature Importance Insights:**
 The feature importance analysis reveals that:
-- The month feature is overwhelmingly the most important predictor (62.25% importance), suggesting  seasonal patterns are the strongest predictor of air temperature
+- The month feature is overwhelmingly the most important predictor (62.58% importance), suggesting  seasonal patterns are the strongest predictor of air temperature
 - Weather variables (Total Rain, Barometric Pressure, Humidity, Solar Radiation) and vectorized wind variables are important but secondary to temporal patterns
 - Rolling windows of predictor variables (humidity, pressure, rain intensity) contribute but are less important than seasonal features
 - Temporal features (month, year) are far more important than static weather variables
@@ -258,11 +258,11 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
    - Only 3 weather stations - limited spatial coverage
 
 2. **Model Limitations:**
-   - Linear Regression's moderate performance (R² = 0.2575) indicates that linear relationships are insufficient for this task
-   - XGBoost shows some overfitting (train R² = 0.9145 vs test R² = 0.8102), though this is reasonable
-   - Model relies heavily on seasonal features (month = 62.25% importance), which limits predictive power for same-season predictions
+   - Linear Regression's moderate performance (R² = 0.2576) indicates that linear relationships are insufficient for this task
+   - XGBoost shows some overfitting (train R² = 0.9128 vs test R² = 0.8130), though this is reasonable
+   - Model relies heavily on seasonal features (month = 62.58% importance), which limits predictive power for same-season predictions
    - Model trained on historical data may not generalize to future climate conditions
-   - RMSE of 4.37°C, while reasonable, may not be sufficient for applications requiring high precision
+   - RMSE of 4.34°C, while reasonable, may not be sufficient for applications requiring high precision
 
 3. **Feature Engineering:**
    - Some potentially useful features may not have been created (e.g., lag features, interaction terms)

@@ -1,15 +1,15 @@
 feature,importance
-month,0.622547
-Barometric Pressure,0.069538034
-Total Rain,0.05877782
-wind_u,0.041875422
-Humidity,0.037215337
-Solar Radiation,0.028228858
-hour,0.02765481
-pressure_rolling_7h,0.022756672
-wind_v,0.022218704
-humidity_rolling_24h,0.019344186
-Station Name_Foster Weather Station,0.018502185
-Station Name_Oak Street Weather Station,0.018037632
-rain_intensity_rolling_24h,0.0069277957
-day_of_week,0.0063755796
+month,0.62580436
+Barometric Pressure,0.066902235
+Total Rain,0.061855584
+wind_u,0.04101988
+Humidity,0.03782179
+hour,0.026669592
+Solar Radiation,0.026087146
+pressure_rolling_7h,0.024121258
+wind_v,0.021634731
+Station Name_Oak Street Weather Station,0.019745633
+humidity_rolling_24h,0.017917842
+Station Name_Foster Weather Station,0.0163875
+rain_intensity_rolling_24h,0.007860712
+day_of_week,0.006171667

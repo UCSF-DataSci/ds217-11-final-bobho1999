@@ -19,9 +19,8 @@ Initial exploration revealed a dataset of **196,271 records** with 18 columns in
 - Data collected at hourly intervals with some gaps around 2020-2021
 
 Initial visualizations showed:
-- Air temperature ranging from approximately -20°C to 35°C
-- Clear seasonal patterns visible in temperature data
-- 
+- Air temperature ranging from approximately -20°C to 35°C, with two peaks around 7°C and 24°C
+- Clear seasonal patterns visible in temperature data, with monthly average temperature higher in summer months and lower in winter months
 
 ![Figure 1: Initial Data Exploration](output/q1_visualizations.png)
 *Figure 1: Initial exploration visualizations showing distributions of air temperature, air temperature time series.*
@@ -34,14 +33,14 @@ Data cleaning addressed missing values, outliers, and data type validation. Afte
 - Rows before cleaning: **196,271**
 - Missing values: Mean/mode-imputed and forward-filled
   - `Wet Bulb Temperature`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - `Rain Intensity`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - `Total Rain`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - `Precipitation Type`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
-  - `Heading`: 75,926 missing → 0 missing (large gap, likely sensor-specific)
+  - `Rain Intensity`: 75,926 missing → 0 missing 
+  - `Total Rain`: 75,926 missing → 0 missing 
+  - `Precipitation Type`: 75,926 missing → 0 missing
+  - `Heading`: 75,926 missing → 0 missing 
 - Missing values: Forward-filled
   - `Air Temperature`: 75 missing → 0 missing
   - `Barometric Pressure`: 146 missing → 0 missing
-- Outliers: Capped using IQR method (3×IQR bounds)
+- Outliers: Capped using IQR method (1.5×IQR bounds)
   - `Air Temperature`: 97 outliers capped (bounds: [-21.5, 47.3])
   - `Wet Bulb Temperature`: 144 outliers capped (bounds: [-20.6, 41.5])
   - `Humidity`: 185 outliers capped (bounds: [22.5, 114.5])
@@ -100,12 +99,11 @@ Feature engineering created derived variables and rolling window statistics to c
 Pattern analysis revealed several important temporal and correlational patterns:
 
 **Temporal Trends:**
-- Clear seasonal patterns: Air temperatures peak in summer months and reach minima in winter
+- Clear seasonal patterns in air temperatures (warmer in summer months, colder at winter months)
 - Monthly air temperature range: -5.0°C to 25.3°C
-- Strong seasonal variation typical of Chicago's climate
 
 **Daily Patterns:**
-- Strong diurnal cycle in air temperature (warmer during day, cooler at night)
+- Clear daily cycle in air temperature (warmer during day, cooler at night)
 - Peak air temperature typically occurs around hour 15-16 (3-4 PM)
 - Minimum air temperature typically occurs around hour 4-5 (4-5 AM)
 - This pattern reflects solar heating and cooling cycles
@@ -118,7 +116,7 @@ Pattern analysis revealed several important temporal and correlational patterns:
 - Air Temperature vs Humidity: 0.01 (very weak positive correlation)
 
 ![Figure 2: Pattern Analysis](output/q5_patterns.png)
-*Figure 2: Advanced pattern analysis showing monthly temperature trends, seasonal patterns by month, daily patterns by hour, and correlation heatmap of key variables.*
+*Figure 2: Advanced pattern analysis showing daily patterns by hour, correlation heatmap of key variables, monthly temperature trends, seasonal patterns by month.*
 
 ### Phase 7: Modeling Preparation
 
@@ -131,12 +129,11 @@ Modeling preparation involved selecting a target variable, performing temporal t
 - Rationale: Time series data requires temporal splitting to avoid data leakage and ensure realistic evaluation
 
 **Feature Preparation:**
-- Features selected (excluding target, non-numeric columns, and features derived from target)
-- Excluded features with >0.95 correlation to target (e.g., Wet Bulb Temperature with 0.978 correlation)
+- Features selected (excluding target, non-numeric columns)
+- Excluded features (and those derived) with >0.95 correlation to target (e.g., Wet Bulb Temperature with 0.978 correlation)
 - Categorical variables (Station Name) one-hot encoded
-- All features standardized and missing values handled
-- Infinite values replaced with NaN then filled with median
-- No data leakage: future data excluded from training set, and features derived from target excluded
+- All missing values handled
+- No data leakage: future data excluded from training set
 - Total dataset: **182,516 rows** before split
 
 ### Phase 8: Modeling
@@ -163,10 +160,10 @@ Top 5 features by importance:
 4. `wind_u` (4.10% importance)
 5. `Humidity` (3.78% importance)
 
-The month feature dominates feature importance, accounting for 62.58% of total importance. This makes intuitive sense - seasonal patterns are the strongest predictor of air temperature. Temporal features (month) and weather variables (rain, pressure, humidity, wind) are more important than rolling windows of predictor variables. The top 5 features account for 83.34% of total importance.
+The `month` feature dominates feature importance, accounting for 62.58% of total importance. This makes  sense because seasonal patterns are the strongest predictor of air temperature. Temporal features (month) and weather variables (rain, pressure, humidity, wind) are the top 5 most important predictor variables, accounted for 83.34% of total importance.
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
-*Figure 3: Final visualizations showing model performance comparison, and predictions vs actual values, feature importance for the best-performing XGBoost model.*
+*Figure 3: Final visualizations showing model performance comparison, and predictions vs actual values, feature importance, and residual plot for the best-performing XGBoost model.*
 
 ### Phase 9: Results
 
@@ -194,7 +191,7 @@ The residuals plot shows relatively uniform distribution around zero, suggesting
 
 ## Model Results
 
-The modeling phase successfully built predictive models for air temperature. The performance metrics demonstrate that XGBoost performs well, while Linear Regression shows that linear relationships alone are insufficient for this task.
+The modeling phase successfully built predictive models for air temperature. The performance metrics show that XGBoost performs well, while Linear Regression shows that linear relationships alone are insufficient for this task.
 
 **Performance Interpretation:**
 - **R² Score:** Measures proportion of variance explained. XGBoost's R² of 0.8130 means the model explains 81.02% of variance in air temperature - a strong but realistic result.
@@ -205,15 +202,15 @@ The modeling phase successfully built predictive models for air temperature. The
 1. Highest R² score (0.8130)
 2. Lowest RMSE (4.34°C)
 3. Lowest MAE (3.32°C)
-4. Good generalization (train R² = 0.9128, test R² = 0.8130 - some overfitting but reasonable)
+4. Good generalization (train R² = 0.9128, test R² = 0.8130)
 
 **Feature Importance Insights:**
 The feature importance analysis reveals that:
-- The month feature is overwhelmingly the most important predictor (62.58% importance), suggesting  seasonal patterns are the strongest predictor of air temperature
+- The month feature is the most important predictor (62.58% importance), suggesting  seasonal patterns are the strongest predictor of air temperature
 - Weather variables (Total Rain, Barometric Pressure, Humidity, Solar Radiation) and vectorized wind variables are important but secondary to temporal patterns
 - Rolling windows of predictor variables (humidity, pressure, rain intensity) contribute but are less important than seasonal features
-- Temporal features (month, year) are far more important than static weather variables
-- Station location has minimal impact (encoded station features have very low importance)
+- Temporal features (month, hour) are more important than weather variables
+- Station location has some impact (encoded station features have low importance)
 
 **Note on Data Leakage Avoidance:** By not deriving  features from the target variable and excluding highly correlated features (Wet Bulb Temperature), we achieved realistic model performance. This demonstrates the importance of careful feature selection to avoid circular logic.
 
@@ -230,14 +227,14 @@ The analysis revealed several important temporal patterns:
 - **Monthly:** Clear seasonal cycle with temperatures peaking in summer months (June-August) and reaching minima in winter months (December-February)
 - Monthly air temperature range: -5.0°C to 25.3°C
 - **Daily:** Strong diurnal cycle with temperatures peaking in afternoon (3-4 PM, hour 15-16) and reaching minima in early morning (4-5 AM, hour 4-5)
-- Daily patterns are consistent across different day of the wekk, though amplitude varies
+- Daily patterns are consistent across different days of the week.
 
 **Temporal Relationships:**
 - Air temperature shows strong seasonal patterns with month being the most important predictor
 - Total rain shows moderate positive correlation with air temperature (0.47)
 - Solar radiation shows moderate positive correlation with temperature (0.29)
 - Barometric pressure shows moderate negative correlation with temperature (-0.25)
-- Rolling windows of predictor variables (rain intensity, humidity, pressure) capture temporal dependencies
+
 
 **Anomalies:**
 - Large gap in Wet Bulb Temperature and precipitation-related data (75,926 missing values, 38.68% of dataset) appears exclusively in Foster station data
@@ -245,7 +242,6 @@ The analysis revealed several important temporal patterns:
 - Missing sensor value in 2020 and 2021 identified (gaps in time series)
 - No major anomalies in temporal patterns beyond expected seasonal variation
 
-These temporal patterns are critical for accurate prediction, as evidenced by the high importance of temporal features (especially rolling windows) in the model.
 
 ## Limitations & Next Steps
 
@@ -260,20 +256,17 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
 
 2. **Model Limitations:**
    - Linear Regression's moderate performance (R² = 0.2576) indicates that linear relationships are insufficient for this task
-   - XGBoost shows slight overfitting (train R² = 0.9128 vs test R² = 0.8130), though this is reasonable
-   - Model relies heavily on seasonal features (month = 62.58% importance), which limits predictive power for same-season predictions
+   - XGBoost model relies heavily on seasonal features (month = 62.58% importance), which may limit its predictive power during abnormal weather years.
    - Model trained on historical data may not generalize to future climate conditions
    - RMSE of 4.34°C, while reasonable, may not be sufficient for applications requiring high precision
 
 3. **Feature Engineering:**
-   - Some potentially useful features may not have been created (e.g., lag features, interaction terms)
+   - Lacking potentially useful features (e.g., lag features, interaction terms)
    - Rolling window sizes (7h, 24h) were created somewhat arbitrarily and chosen solely based on correlation strength
-   - Avoided deriving features from target variable `Air Temperature` to avoid data leakage
    - External data (e.g., weather forecasts, lake conditions) not incorporated
 
 4. **Scope:**
-   - Analysis focused on air temperature prediction; other targets (e.g., wind speed, precipitation) not explored
-   - Only one target variable analyzed; multi-target modeling could provide additional insights
+   - Analysis focused on air temperature prediction; other targets (e.g., wind speed, precipitation) and multi-target modeling not explored but could provide additional insights
    - Spatial relationships between stations not analyzed
 
 **Next Steps:**
@@ -282,34 +275,32 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
    - Experiment with different rolling window sizes and lag features
    - Try additional models (e.g., Random Forest, Gradient Boosting) and fine tune model parameters to potentially improve performance
    - Incorporate external data sources (weather forecasts, lake level data)
-   - Try ensemble methods combining multiple models
    - Validate model on truly out-of-sample data (future dates)
-   - Address overfitting in XGBoost (train/test gap suggests slight overfitting)
 
 2. **Feature Engineering:**
    - Create interaction features between key variables (e.g, wind × temperature)
-   - Create more rolling features from Solar radiation, wind components
-   - Add lag features (previous hour/day values) explicitly to potentially improve temporal modeling without leakage
-   - Incorporate spatial features (distance between stations, station-specific effects)
+   - Create more rolling features from other weather features (e.g., solar radiation, wind components)
+   - Add lag features (previous hour/day values) to potentially improve temporal modeling without leakage
+   - Incorporate spatial features (distance to lakefront, station-specific effects)
 
 3. **Analysis Extension:**
    - Predict other targets (wind speed, precipitation, humidity)
+   - Build multi-target models
    - Analyze station-specific patterns and differences
    - Build forecasting models for future predictions
    - Analyze spatial relationships between stations
 
 4. **Validation:**
    - Cross-validation with temporal splits
-   - Validation on additional time periods
+   - Validation on additional time periods (future data)
    - Comparison with physical models (if available)
    - Sensitivity analysis on feature importance
    - Further investigation of feature engineering to improve Linear Regression performance
 
 5. **Deployment:**
-   - Real-time prediction system
+   - Real-time weather prediction system
    - Alert system for extreme conditions
    - Dashboard for beach managers
-   - Integration with weather forecasting systems
 
 ## Conclusion
 

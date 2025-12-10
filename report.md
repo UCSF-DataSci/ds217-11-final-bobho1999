@@ -1,7 +1,7 @@
 # Chicago Beach Weather Sensors Analysis
 ## Executive Summary
 
-This analysis examines weather sensor data from Chicago beaches along Lake Michigan, covering 196,271 hourly measurements from April 2015 to December 2025 across three weather stations. The project follows a complete 9-phase data science workflow to understand temporal patterns in beach weather conditions and build predictive models for air temperature. Key findings include strong seasonal temperature patterns, significant daily cycles, and successful prediction models. The XGBoost model emerged as the best performer, with a test R² of 0.8130 and RMSE of 4.34°C, demonstrating that air temperature can be predicted with good accuracy from temporal features, rolling windows of predictor variables, and weather variables.
+This analysis studies weather sensor data from Chicago beaches along Lake Michigan, which includes 196,271 hourly records collected from April 2015 to December 2025 from three weather stations. The project follows a full 9-phase data science workflow to identify temporal patterns in beach weather and to build predictive models for air temperature. The results show clear seasonal trends, strong daily temperature cycles, and effective prediction performance. Among the two models tested, XGBoost performed better, reaching a test R² of 0.8130 and an RMSE of 4.34°C. These results suggest that air temperature can be predicted with good accuracy using temporal features, rolling statistics of predictor variables, and other weather measurements.
 
 ## Phase-by-Phase Findings
 
@@ -11,9 +11,9 @@ Initial exploration revealed a dataset of **196,271 records** with 18 columns in
 
 **Key Data Quality Issues Identified:**
 - 75 missing values in Air Temperature (0.04%)
-- 75,926 missing values in Wet Bulb Temperature (38.68%) - significant portion of data
+- 75,926 missing values in Wet Bulb Temperature (38.68%) - large portion of data
 - Missing values in Wet Bulb Temperature, Rain Intensity, Total Rain, Precipitation Type, and Heading (same 75,926 records) all from Foster Weather Station
-- 146 missing values in Barometric Pressure
+- 146 missing values in Barometric Pressure (0.07%)
 - 13,425 negative values in Solar Radiation
 - Some outliers in Air Temperature, Wet Bulb Temperature, Humidity, Wind Speed, Barometric Pressure, and Battery Life measurements
 - Data collected at hourly intervals with some gaps around 2020-2021
@@ -72,7 +72,7 @@ The dataset covers approximately 10.6 years of hourly measurements (April 2015 t
 
 ### Phase 5: Feature Engineering
 
-Feature engineering created derived variables and rolling window statistics to capture relationships and temporal dependencies. To avoid data leakage, no features were derived from the target variable `Air Temperature`. Similarly, only rolling windows of predictor variables were created. Creating rolling windows of the target variable (e.g., `air_temp_rolling_7h` when predicting Air Temperature) would cause data leakage. The rolling window features of predictor variables capture temporal dependencies essential for time series prediction.
+Feature engineering created derived variables and rolling window statistics to capture relationships and temporal dependencies. To avoid data leakage, no features were derived from the target variable `Air Temperature`. Similarly, only rolling windows of predictor variables were created. Creating rolling windows of the target variable (e.g., `air_temp_rolling_7h` when predicting Air Temperature) would cause data leakage.
 
 **Derived Features:**
 - `pressure_delta`: Pressure change between one hour
@@ -129,7 +129,7 @@ Modeling preparation involved selecting a target variable, performing temporal t
 - Rationale: Time series data requires temporal splitting to avoid data leakage and ensure realistic evaluation
 
 **Feature Preparation:**
-- Features selected (excluding target, non-numeric columns)
+- Features selected (excluding target, string columns)
 - Excluded features (and those derived) with >0.95 correlation to target (e.g., Wet Bulb Temperature with 0.978 correlation)
 - Categorical variables (Station Name) one-hot encoded
 - All missing values handled
@@ -170,7 +170,7 @@ The `month` feature dominates feature importance, accounting for 62.58% of total
 The final results demonstrate successful prediction of air temperature with good accuracy. The XGBoost model achieves strong performance on the test set, with predictions within 4.34°C on average.
 
 **Summary of Key Findings:**
-1. **Model Performance:** XGBoost achieves R² = 0.8130, indicating that 81.02% of variance in air temperature can be explained by the features
+1. **Model Performance:** XGBoost achieves R² = 0.8130, indicating that 81.30% of variance in air temperature can be explained by the features
 2. **Feature Importance:** The month feature is overwhelmingly the most important predictor (62.58% importance), highlighting the critical role of seasonal patterns
 3. **Temporal Patterns:** Strong seasonal and daily patterns are critical for accurate prediction
 4. **Data Quality:** Cleaning process maintained more than 90% of the dataset while improving reliability
@@ -194,7 +194,7 @@ The residuals plot shows relatively uniform distribution around zero, suggesting
 The modeling phase successfully built predictive models for air temperature. The performance metrics show that XGBoost performs well, while Linear Regression shows that linear relationships alone are insufficient for this task.
 
 **Performance Interpretation:**
-- **R² Score:** Measures proportion of variance explained. XGBoost's R² of 0.8130 means the model explains 81.02% of variance in air temperature - a strong but realistic result.
+- **R² Score:** Measures proportion of variance explained. XGBoost's R² of 0.8130 means the model explains 81.30% of variance in air temperature - a strong but realistic result.
 - **RMSE (Root Mean Squared Error):** Average prediction error in original units. XGBoost's RMSE of 4.34°C means predictions are typically within 4.34°C of actual values - reasonable for weather prediction.
 - **MAE (Mean Absolute Error):** Average absolute prediction error. XGBoost's MAE of 3.32°C indicates good predictive accuracy.
 
@@ -287,7 +287,6 @@ The analysis revealed several important temporal patterns:
    - Predict other targets (wind speed, precipitation, humidity)
    - Build multi-target models
    - Analyze station-specific patterns and differences
-   - Build forecasting models for future predictions
    - Analyze spatial relationships between stations
 
 4. **Validation:**

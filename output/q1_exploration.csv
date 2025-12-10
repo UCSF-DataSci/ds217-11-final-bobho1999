@@ -1,15 +1,15 @@
 column_name,mean,std,min,max,missing_count
-Air Temperature,12.6,10.4,-29.8,37.6,75.0
-Wet Bulb Temperature,10.3,9.4,-28.9,28.4,75926.0
-Humidity,68.0,15.6,0.0,100.0,0.0
-Rain Intensity,0.2,1.8,0.0,183.6,75926.0
-Interval Rain,0.1,1.1,-0.9,63.4,0.0
-Total Rain,141.5,190.5,0.0,1056.1,75926.0
-Precipitation Type,4.3,15.6,0.0,70.0,75926.0
-Wind Direction,140.8,122.0,0.0,359.0,0.0
-Wind Speed,2.9,5.3,0.0,999.9,0.0
-Maximum Wind Speed,3.6,6.0,0.0,999.9,0.0
-Barometric Pressure,994.3,10.0,0.0,3098.5,146.0
-Solar Radiation,112.4,842.9,-100000.0,1277.0,0.0
-Heading,282.0,142.8,0.0,359.0,75926.0
-Battery Life,13.2,1.5,0.0,15.3,0.0
+Air Temperature,12.6,10.4,-29.8,37.6,75
+Wet Bulb Temperature,10.3,9.4,-28.9,28.4,75926
+Humidity,68.0,15.6,0.0,100.0,0
+Rain Intensity,0.2,1.8,0.0,183.6,75926
+Interval Rain,0.1,1.1,-0.9,63.4,0
+Total Rain,141.5,190.5,0.0,1056.1,75926
+Precipitation Type,4.3,15.6,0.0,70.0,75926
+Wind Direction,140.8,122.0,0.0,359.0,0
+Wind Speed,2.9,5.3,0.0,999.9,0
+Maximum Wind Speed,3.6,6.0,0.0,999.9,0
+Barometric Pressure,994.3,10.0,0.0,3098.5,146
+Solar Radiation,112.4,842.9,-100000.0,1277.0,0
+Heading,282.0,142.8,0.0,359.0,75926
+Battery Life,13.2,1.5,0.0,15.3,0

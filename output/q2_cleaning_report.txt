@@ -25,11 +25,11 @@ Missing Data Handling:
   Result: All missing values filled
 
 - Barometric Pressure: 146 missing values (0.07%)
-  Method: Backward-fill (time series appropriate)
+  Method: Forward-fill (time series appropriate)
   Result: All missing values filled
 
 - Air Temperature: 75 missing values (0.04%)
-  Method: Backward-fill (time series appropriate)
+  Method: Forward-fill (time series appropriate)
   Result: All missing values filled
 
 Outlier Handling:

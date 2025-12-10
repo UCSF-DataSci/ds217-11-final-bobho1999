@@ -252,22 +252,23 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
 **Limitations:**
 
 1. **Data Quality:**
-   - Large number of missing values in Wet Bulb Temperature, precipitation-related features (38.68%) required imputation, which may introduce bias
-   - Sensor dropouts create gaps in time series that could affect pattern detection
-   - Outlier capping may have removed some valid extreme events
-   - Only 3 weather stations - limited spatial coverage
+   - The Foster Weather Station was missing Wet Bulb Temperature, precipitation measurements, and heading data (account for 38.68% of dataset). Although imputed using related stations and forward-fill, the reconstructed values may not accurately reflect real local conditions.
+   - Using station-to-station hourly averages assumes spatial homogeneity across the Chicago lakefront. Microclimate differences, especially for precipitation and wind, could introduce bias
+   - Sensor gaps around 2020–2021 due to sensor outages. The temporal discontinuities may have distorted long-term trend and seasonal analyses.
+   - Outlier capping using IQR method reduces extreme distortions, but some outliers may represent valid extreme weather events that are worth investigation.
+   - Negative solar radiation values (13,425 rows) were capped to 0, but these likely reflect sensor errors, and their true values remain unknown.
 
 2. **Model Limitations:**
    - Linear Regression's moderate performance (R² = 0.2576) indicates that linear relationships are insufficient for this task
-   - XGBoost shows some overfitting (train R² = 0.9128 vs test R² = 0.8130), though this is reasonable
+   - XGBoost shows slight overfitting (train R² = 0.9128 vs test R² = 0.8130), though this is reasonable
    - Model relies heavily on seasonal features (month = 62.58% importance), which limits predictive power for same-season predictions
    - Model trained on historical data may not generalize to future climate conditions
    - RMSE of 4.34°C, while reasonable, may not be sufficient for applications requiring high precision
 
 3. **Feature Engineering:**
    - Some potentially useful features may not have been created (e.g., lag features, interaction terms)
-   - Rolling window sizes (7h, 24h) were chosen somewhat arbitrarily
-   - Avoided deriving features from target variable Air Temperature to avoid data leakage
+   - Rolling window sizes (7h, 24h) were created somewhat arbitrarily and chosen solely based on correlation strength
+   - Avoided deriving features from target variable `Air Temperature` to avoid data leakage
    - External data (e.g., weather forecasts, lake conditions) not incorporated
 
 4. **Scope:**
@@ -279,22 +280,21 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
 
 1. **Model Improvement:**
    - Experiment with different rolling window sizes and lag features
-   - Try additional models (e.g., XGBoost, Gradient Boosting) to potentially improve performance
+   - Try additional models (e.g., Random Forest, Gradient Boosting) and fine tune model parameters to potentially improve performance
    - Incorporate external data sources (weather forecasts, lake level data)
    - Try ensemble methods combining multiple models
    - Validate model on truly out-of-sample data (future dates)
-   - Address overfitting in XGBoost (train/test gap suggests some overfitting)
+   - Address overfitting in XGBoost (train/test gap suggests slight overfitting)
 
 2. **Feature Engineering:**
-   - Create interaction features between key variables
-   - Add lag features (previous hour/day values) explicitly
+   - Create interaction features between key variables (e.g, wind × temperature)
+   - Create more rolling features from Solar radiation, wind components
+   - Add lag features (previous hour/day values) explicitly to potentially improve temporal modeling without leakage
    - Incorporate spatial features (distance between stations, station-specific effects)
-   - Create weather condition categories
 
 3. **Analysis Extension:**
    - Predict other targets (wind speed, precipitation, humidity)
    - Analyze station-specific patterns and differences
-   - Investigate sensor reliability and data quality by location
    - Build forecasting models for future predictions
    - Analyze spatial relationships between stations
 
@@ -313,5 +313,5 @@ These temporal patterns are critical for accurate prediction, as evidenced by th
 
 ## Conclusion
 
-This analysis successfully applied a complete 9-phase data science workflow to Chicago Beach Weather Sensors data, achieving good air temperature predictions (R² = 0.7684, RMSE = 4.87°C). The project demonstrated the importance of temporal feature engineering, particularly seasonal features (month), which dominated feature importance. Key insights include strong seasonal and daily patterns, the critical role of temporal features in prediction, and the superior performance of ensemble tree-based models over linear models. The analysis demonstrates proper data leakage avoidance by excluding features derived from the target variable, resulting in realistic and generalizable model performance. This provides a solid foundation for beach condition monitoring and prediction systems.
+This work applied a full 9-phase data science workflow to the Chicago Beach Weather Sensors dataset and achieved strong predictive performance for air temperature (R² = 0.8130, RMSE = 4.34°C). The results highlight the importance of temporal feature engineering, with seasonal indicator (month) as the dominant predictors in the modeling process. The analysis revealed clear seasonal and daily temperature cycles, showed that temporal features are essential for accurate forecasting, and confirmed that ensemble tree-based methods outperform linear approaches for this task. Proper avoidance of data leakage, particularly by not deriving features from the target variable, contributed to producing realistic and generalizable results. Overall, the study establishes a reliable foundation for developing beach weather monitoring and predictive systems.
 

@@ -1,17 +1,18 @@
 # Chicago Beach Weather Sensors Analysis
 ## Executive Summary
 
-This analysis studies weather sensor data from Chicago beaches along Lake Michigan, which includes 196,271 hourly records collected from April 2015 to December 2025 from three weather stations. The project follows a full 9-phase data science workflow to identify temporal patterns in beach weather and to build predictive models for air temperature. The results show clear seasonal trends, strong daily temperature cycles, and effective prediction performance. Among the two models tested, XGBoost performed better, reaching a test R² of 0.8130 and an RMSE of 4.34°C. These results suggest that air temperature can be predicted with good accuracy using temporal features, rolling statistics of predictor variables, and other weather measurements.
+This analysis studies weather sensor data from Chicago beaches along Lake Michigan, which includes 196,271 hourly records collected from April 2015 to December 2025 from three weather stations. The main goal of the project is to identify temporal patterns in beach weather and build predictive models for air temperature through a full 9-phase data science workflow. The results show clear seasonal trends, strong daily temperature cycles, and effective prediction performance. Among the two models tested, XGBoost performed better, reaching a test R² of 0.8130 and an RMSE of 4.34°C. These results suggest that air temperature can be predicted with good accuracy using temporal features, rolling statistics of predictor variables, and other weather measurements.
 
 ## Phase-by-Phase Findings
 
 ### Phase 1-2: Exploration
 
-Initial exploration revealed a dataset of **196,271 records** with 18 columns including temperature measurements (air and wet bulb), wind speed and direction, humidity, precipitation, barometric pressure, solar radiation, and sensor metadata. The data spans from April 25, 2015 to December 2, 2025, with measurements from three different weather stations: 63rd Street Weather Station, Foster Weather Station, and Oak Street Weather Station.
+The initial exploration showed that the dataset contains **196,271 records** and **18 variables**, including measurements of air and wet-bulb temperature, wind speed and direction, humidity, rainfall, barometric pressure, solar radiation, and other sensor information. The data was collected from three weather stations (63rd Street, Foster, and Oak Street) between April 25, 2015 and December 2, 2025.
+
 
 **Key Data Quality Issues Identified:**
 - 75 missing values in Air Temperature (0.04%)
-- 75,926 missing values in Wet Bulb Temperature (38.68%) - large portion of data
+- 75,926 missing values in Wet Bulb Temperature (38.68%) 
 - Missing values in Wet Bulb Temperature, Rain Intensity, Total Rain, Precipitation Type, and Heading (same 75,926 records) all from Foster Weather Station
 - 146 missing values in Barometric Pressure (0.07%)
 - 13,425 negative values in Solar Radiation
@@ -27,7 +28,7 @@ Initial visualizations showed:
 
 ### Phase 3: Data Cleaning
 
-Data cleaning addressed missing values, outliers, and data type validation. After examining the dataset, it seems like all missing precipitation-related measurements, such as `Rain Intensity`, `Total Rain`, and `Precipitation Type`, occur exclusively at the Foster Weather Station, while the other two stations (Oak Street and 63rd Street) contain nearly complete records. Because these beach weather stations are located along the same Chicago lakefront and experience highly correlated weather patterns, I imputed Foster’s missing precipitation-related values, as well as Wet Bulb Temperature, using the hourly mean value (or mode for Precipitation type and Heading) from the other two stations. This approach provides a physically reasonable estimate of precipitation conditions at Foster during each timestamp while avoiding unrealistic assumptions produced by simple constant filling. For hours when neither of the other stations recorded a usable value, I applied a forward fill as a fallback, which preserves temporal continuity without injecting future precipitation events into earlier time periods. This two-step strategy balances meteorological realism with data completeness and ensures that modeling is not biased by systematic under-reporting or artificial rain events at the Foster station. For the remaining small amount of missing values in `Air Temperature` and `Barometric Pressure`, simple forward-filling is applied.
+Data cleaning addressed missing values, outliers, and data type validation. After examining the dataset, it seems like all missing precipitation-related measurements, such as `Rain Intensity`, `Total Rain`, and `Precipitation Type`, occur exclusively at the Foster Weather Station, while the other two stations (Oak Street and 63rd Street) contain nearly complete records. Because these beach weather stations are located along the same Chicago lakefront and experience highly correlated weather patterns, I imputed Foster’s missing precipitation-related values, as well as Wet Bulb Temperature, using the hourly mean value (or mode for Precipitation type and Heading) from the other two stations. This approach provides a physically reasonable estimate of precipitation conditions at Foster during each timestamp while avoiding unrealistic assumptions produced by simple constant filling. For hours when neither of the other stations recorded a usable value, I applied a forward fill as a fallback, which preserves temporal continuity without injecting future precipitation events into earlier time periods. This two-step method helps keep the weather patterns realistic while still filling the missing data, and it prevents the model from being biased by missing or fake rain values from the Foster station. For the remaining small amount of missing values in `Air Temperature` and `Barometric Pressure`, simple forward-filling is applied.
 
 **Cleaning Results:**
 - Rows before cleaning: **196,271**
@@ -58,7 +59,7 @@ The cleaning process maintained more than 90% of the full dataset size while imp
 
 ### Phase 4: Data Wrangling
 
-Datetime parsing and temporal feature extraction were critical for time series analysis. The `Measurement Timestamp` column was parsed from the format "MM/DD/YYYY HH:MM:SS AM/PM" and set as the DataFrame index, enabling time-based operations.
+Datetime parsing and temporal feature extraction were critical for time series analysis. The `Measurement Timestamp` column was parsed from the format "MM/DD/YYYY HH:MM:SS AM/PM" and set as the DataFrame index for later time-based operations.
 
 **Temporal Features Extracted:**
 - `hour`: Hour of day (0-23)
@@ -72,7 +73,9 @@ The dataset covers approximately 10.6 years of hourly measurements (April 2015 t
 
 ### Phase 5: Feature Engineering
 
-Feature engineering created derived variables and rolling window statistics to capture relationships and temporal dependencies. To avoid data leakage, no features were derived from the target variable `Air Temperature`. Similarly, only rolling windows of predictor variables were created. Creating rolling windows of the target variable (e.g., `air_temp_rolling_7h` when predicting Air Temperature) would cause data leakage.
+Feature engineering was applied to construct new variables that better capture changes and patterns in the weather data. Derived features were created to represent hour-to-hour variations, while rolling-window features were added to smooth out noise and highlight short and long-term trends. Additional categorical features grouped some numeric features into broader group to capture nonlinear relationships. Together, these engineered features provided more representations of atmospheric behavior that could be helpful for improving model performance in later phase.
+
+**Note:** To avoid data leakage, no features were derived from the target variable `Air Temperature`. Similarly, only rolling windows of predictor variables were created.
 
 **Derived Features:**
 - `pressure_delta`: Pressure change between one hour
@@ -104,8 +107,8 @@ Pattern analysis revealed several important temporal and correlational patterns:
 
 **Daily Patterns:**
 - Clear daily cycle in air temperature (warmer during day, cooler at night)
-- Peak air temperature typically occurs around hour 15-16 (3-4 PM)
-- Minimum air temperature typically occurs around hour 4-5 (4-5 AM)
+- Highest air temperature typically occurs around hour 15-16 (3-4 PM)
+- Lowest air temperature typically occurs around hour 4-5 (4-5 AM)
 - This pattern reflects solar heating and cooling cycles
 
 **Correlations:**
@@ -120,7 +123,7 @@ Pattern analysis revealed several important temporal and correlational patterns:
 
 ### Phase 7: Modeling Preparation
 
-Modeling preparation involved selecting a target variable, performing temporal train/test splitting, and preparing features. Air temperature was chosen as the target variable, as it's a key indicator of beach conditions and shows predictable patterns.
+`Air temperature` was chosen as the target variable, as it is the main interest of the analysis and shows predictable patterns. Then, temporal train/test splitting and feature preparation were performed for later modeling.
 
 **Temporal Train/Test Split:**
 - Split method: Temporal (80/20 split by time)
@@ -129,8 +132,9 @@ Modeling preparation involved selecting a target variable, performing temporal t
 - Rationale: Time series data requires temporal splitting to avoid data leakage and ensure realistic evaluation
 
 **Feature Preparation:**
-- Features selected (excluding target, string columns)
-- Excluded features (and those derived) with >0.95 correlation to target (e.g., Wet Bulb Temperature with 0.978 correlation)
+- Selected relevant weather features (excluding target, sensor metadata columns)
+- For rolling features derived from the same variable, the window size with stronger correlation to the target was selected
+- Excluded features (and those derived) with >0.95 correlation to target (e.g., Wet Bulb Temperature with 0.98 correlation)
 - Categorical variables (Station Name) one-hot encoded
 - All missing values handled
 - No data leakage: future data excluded from training set
@@ -154,13 +158,13 @@ Two models were trained and evaluated: Linear Regression and XGBoost as suggeste
 
 **Feature Importance (XGBoost):**
 Top 5 features by importance:
-1. `month` (62.58% importance) - the most important, capturing seasonal patterns
+1. `month` (62.58% importance)
 2. `Barometric Pressure` (6.69% importance)
 3. `Total Rain` (6.19% importance)
 4. `wind_u` (4.10% importance)
 5. `Humidity` (3.78% importance)
 
-The `month` feature dominates feature importance, accounting for 62.58% of total importance. This makes  sense because seasonal patterns are the strongest predictor of air temperature. Temporal features (month) and weather variables (rain, pressure, humidity, wind) are the top 5 most important predictor variables, accounted for 83.34% of total importance.
+The `month` feature dominates feature importance, accounting for 62.58% of total importance. This makes  sense because the feature captures seasonal pattern, which is the strongest predictor of air temperature. Temporal features (month) and weather variables (rain, pressure, humidity, wind) are the top 5 most important predictor variables, accounted for 83.34% of total importance.
 
 ![Figure 3: Model Performance](output/q8_final_visualizations.png)
 *Figure 3: Final visualizations showing model performance comparison, and predictions vs actual values, feature importance, and residual plot for the best-performing XGBoost model.*
@@ -171,12 +175,12 @@ The final results demonstrate successful prediction of air temperature with good
 
 **Summary of Key Findings:**
 1. **Model Performance:** XGBoost achieves R² = 0.8130, indicating that 81.30% of variance in air temperature can be explained by the features
-2. **Feature Importance:** The month feature is overwhelmingly the most important predictor (62.58% importance), highlighting the critical role of seasonal patterns
+2. **Feature Importance:** The month feature emerge as the most important predictor (62.58% importance), highlighting the critical role of seasonal patterns
 3. **Temporal Patterns:** Strong seasonal and daily patterns are critical for accurate prediction
 4. **Data Quality:** Cleaning process maintained more than 90% of the dataset while improving reliability
 5. **Data Leakage Avoidance:** By not deriving features from the target variable and excluding features highly correlated (> 0.95) with target variable, we achieved realistic and generalizable model performance
 
-The residuals plot shows relatively uniform distribution around zero, suggesting the model performs reasonably well across the full temperature range. The predictions vs actual scatter plot shows points distributed around the perfect prediction line with some scatter, indicating good but not perfect accuracy - which is realistic for weather prediction.
+The residuals appear evenly spread around zero, indicating the model performs consistently across the temperature range. The predicted vs actual plot shows points clustered around the ideal line with some dispersion, showing a solid, but not flawless, accuracy, which is expected for weather forecasting.
 
 ## Visualizations
 
@@ -224,7 +228,7 @@ The analysis revealed several important temporal patterns:
 - A small flattening appears around 2020–2021 likely due to missing sensor data rather than a real climatic effect
 
 **Seasonal Patterns:**
-- **Monthly:** Clear seasonal cycle with temperatures peaking in summer months (June-August) and reaching minima in winter months (December-February)
+- **Monthly:** Clear seasonal cycle with temperatures peaking in summer months (June-August) and dropping in winter months (December-February)
 - Monthly air temperature range: -5.0°C to 25.3°C
 - **Daily:** Strong diurnal cycle with temperatures peaking in afternoon (3-4 PM, hour 15-16) and reaching minima in early morning (4-5 AM, hour 4-5)
 - Daily patterns are consistent across different days of the week.
@@ -274,7 +278,7 @@ The analysis revealed several important temporal patterns:
 1. **Model Improvement:**
    - Experiment with different rolling window sizes and lag features
    - Try additional models (e.g., Random Forest, Gradient Boosting) and fine tune model parameters to potentially improve performance
-   - Incorporate external data sources (weather forecasts, lake level data)
+   - Incorporate external data sources 
    - Validate model on truly out-of-sample data (future dates)
 
 2. **Feature Engineering:**
@@ -299,7 +303,6 @@ The analysis revealed several important temporal patterns:
 5. **Deployment:**
    - Real-time weather prediction system
    - Alert system for extreme conditions
-   - Dashboard for beach managers
 
 ## Conclusion
 
